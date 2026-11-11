@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablo Editörü</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid var(--tg-theme-hint-color, #ccc);
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: var(--tg-theme-secondary-bg-color, #f4f4f4);
+    }
+    td[contenteditable="true"]:focus {
+      outline: 2px solid var(--tg-theme-button-color, #2481cc);
+      background-color: rgba(36, 129, 204, 0.05);
+    }
+    .btn {
+      background: var(--tg-theme-button-color, #2481cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h3>Veri Tablosu</h3>
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Ad / Başlık</th>
+        <th>Değer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td contenteditable="true">1</td>
+        <td contenteditable="true">Ürün A</td>
+        <td contenteditable="true">150</td>
+      </tr>
+      <tr>
+        <td contenteditable="true">2</td>
+        <td contenteditable="true">Ürün B</td>
+        <td contenteditable="true">275</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn" onclick="sendDataToBot()">Değişiklikleri Kaydet</button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    function sendDataToBot() {
+      const rows = document.querySelectorAll("#dataTable tbody tr");
+      const tableData = [];
+
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td");
+        tableData.push({
+          id: cols[0].innerText.trim(),
+          ad: cols[1].innerText.trim(),
+          deger: cols[2].innerText.trim()
+        });
+      });
+
+      // Veriyi JSON olarak bota gönder ve pencereyi kapat
+      tg.sendData(JSON.stringify(tableData));
+    }
+  </script>
+</body>
+</html>
